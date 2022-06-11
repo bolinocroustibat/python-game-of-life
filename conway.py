@@ -1,8 +1,7 @@
 import arcade as rkd
-from arcade import ShapeElementList, color, draw_rectangle_filled, draw_xywh_rectangle_filled
+from arcade import ShapeElementList, color
 import numpy as np
 from numba import njit, jit, int8
-from pymunk import Shape
 
 WIDTH, HEIGHT = 512, 512
 cells = np.zeros(shape=(64,64),dtype=np.int8)
@@ -43,7 +42,7 @@ class GameWin(rkd.Window):
         global cells
         if not self.mousedown: 
             self.elapsed += delta_time
-            if self.elapsed > 0.0:
+            if self.elapsed > 0.1:
                 self.elapsed = 0
                 evolve(cells)
 
@@ -70,10 +69,12 @@ class GameWin(rkd.Window):
 
 
 def main():
-    evolve.parallel_diagnostics(level=4)    
     game = GameWin()
     game.setup()
     init_glider(10,50)
+    init_glider(12,52)
+    init_glider(32,39)
+    init_glider(32,42)
     rkd.run() # blocks apparently
 
 def init_glider(x,y):
@@ -81,10 +82,6 @@ def init_glider(x,y):
     cells[x+2, y+1]=1
     cells[x:x+3, y]=1
 
-# # @njit(int8[:,:](), fastmath=True)
-# def counts():
-#    return counts 
-  
 @njit(parallel=True, fastmath=True)
 def evolve(cells):
     counts = np.zeros_like(cells,dtype=np.int8)
